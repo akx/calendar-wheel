@@ -1,0 +1,15 @@
+*.ics
+*.local
+*.log*
+*.njsproj
+*.ntvs*
+*.sln
+*.suo
+*.sw?
+*.tsbuildinfo
+.DS_Store
+.idea
+/dist*
+logs
+node_modules
+pnpm-lock.yaml
