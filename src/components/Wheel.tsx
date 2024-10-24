@@ -39,7 +39,7 @@ function getMonthRingElements(
   minDateT: Date,
   maxDateT: Date,
   dateToAngle: (date: Date) => number,
-  { monthInnerRadius, monthOuterRadius }: WheelStyleConfig,
+  { monthInnerRadius, monthOuterRadius, reverse }: WheelStyleConfig,
   dateLocale: datefns.Locale,
 ) {
   if (monthInnerRadius >= monthOuterRadius) return null;
@@ -48,6 +48,9 @@ function getMonthRingElements(
       const textPathId = `month-${+date1}`;
       const startAngle = dateToAngle(date1);
       const endAngle = dateToAngle(date2);
+      const [textStartAngle, textEndAngle] = reverse
+        ? [endAngle, startAngle]
+        : [startAngle, endAngle];
       return (
         <React.Fragment key={+date1}>
           <path
@@ -58,6 +61,7 @@ function getMonthRingElements(
               monthOuterRadius,
               startAngle,
               endAngle,
+              reverse,
             )}
             opacity={0.7}
             fill={monthColors[date1.getMonth()]!.hex}
@@ -69,12 +73,16 @@ function getMonthRingElements(
               0,
               0,
               monthOuterRadius + 5,
-              startAngle,
-              endAngle,
+              textStartAngle,
+              textEndAngle,
             )}
           />
           <text>
-            <textPath href={"#" + textPathId}>
+            <textPath
+              href={`#${textPathId}`}
+              textAnchor={reverse ? "end" : "start"}
+              startOffset={reverse ? "100%" : "0%"}
+            >
               {datefns.formatDate(date1, "LLLL yyyy", {
                 locale: dateLocale,
               })}
@@ -126,6 +134,7 @@ function getEventsElements(
     laneGap,
     laneWidth,
     minimumVisibleAngleDeg,
+    reverse,
   }: WheelStyleConfig,
 ) {
   const minimumVisibleAngle = (minimumVisibleAngleDeg / 360) * Math.PI * 2;
@@ -137,6 +146,9 @@ function getEventsElements(
     if (Math.abs(endAngle - startAngle) < minimumVisibleAngle) {
       return null;
     }
+    const [textStartAngle, textEndAngle] = reverse
+      ? [endAngle, startAngle]
+      : [startAngle, endAngle];
     const normLane = event.lane - 1;
     const laneInnerRadius = eventInnerRadius - normLane * (laneWidth + laneGap);
     const laneOuterRadius = laneInnerRadius + laneWidth;
@@ -150,6 +162,7 @@ function getEventsElements(
             laneOuterRadius,
             startAngle,
             endAngle,
+            reverse,
           )}
           fill="#f5f6fa"
           stroke="#2f3640"
@@ -162,8 +175,8 @@ function getEventsElements(
             0,
             0,
             (laneInnerRadius + laneOuterRadius) / 2,
-            startAngle,
-            endAngle,
+            textStartAngle,
+            textEndAngle,
           )}
         />
         <text fontSize="9" dominantBaseline="middle" textAnchor="middle">
@@ -188,13 +201,13 @@ export function Wheel({
   const minTimestamp = +minDateT;
   const maxTimestamp = +maxDateT;
   const tsRange = maxTimestamp - minTimestamp;
-  const { angleOffsetDeg, size } = styleConfig;
+  const { angleOffsetDeg, size, reverse } = styleConfig;
 
   const angleOffset = (angleOffsetDeg / 360) * Math.PI * 2;
 
   const dateToAngle = (date: Date) => {
     const p = (+date - minTimestamp) / tsRange;
-    return p * Math.PI * 2 + angleOffset;
+    return p * Math.PI * 2 * (reverse ? -1 : 1) + angleOffset;
   };
 
   return (

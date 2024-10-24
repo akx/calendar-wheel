@@ -9,6 +9,7 @@ export interface WheelStyleConfig {
   size: number;
   angleOffsetDeg: number;
   minimumVisibleAngleDeg: number;
+  reverse: boolean;
 }
 
 export function getDefaultWheelStyle(size: number): WheelStyleConfig {
@@ -28,5 +29,6 @@ export function getDefaultWheelStyle(size: number): WheelStyleConfig {
     size,
     angleOffsetDeg: -90,
     minimumVisibleAngleDeg: 0,
+    reverse: false,
   };
 }

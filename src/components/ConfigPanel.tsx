@@ -257,6 +257,21 @@ function StylePanel({
               />
             </td>
           </tr>
+          <tr>
+            <th>Direction</th>
+            <td colSpan={2}>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={() =>
+                    setStyle((style) => ({ ...style, reverse: !style.reverse }))
+                  }
+                  checked={style.reverse}
+                />
+                &nbsp;Counter-clockwise
+              </label>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
