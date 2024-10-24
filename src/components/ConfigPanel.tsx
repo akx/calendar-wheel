@@ -24,19 +24,28 @@ function StyleNumberInput({
   field,
   setStyle,
   unit,
+  min = 0,
+  max,
+  step,
 }: {
   style: WheelStyleConfig;
   field: keyof WheelStyleConfig;
   setStyle: React.Dispatch<React.SetStateAction<WheelStyleConfig>>;
   unit?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 }) {
   return (
     <>
       <input
         type="number"
         className="border border-gray-400 p-1 mx-1 rounded"
+        // @ts-expect-error we'll only be using this with number fields, pinky swear
         value={style[field]}
-        min={0}
+        min={min}
+        max={max}
+        step={step}
         onChange={(e) =>
           setStyle((style) => ({
             ...style,
@@ -270,6 +279,25 @@ function StylePanel({
                 />
                 &nbsp;Counter-clockwise
               </label>
+            </td>
+          </tr>
+          <tr>
+            <th>Font sizes</th>
+            <td>
+              Month:
+              <StyleNumberInput
+                style={style}
+                field="monthFontSize"
+                setStyle={setStyle}
+              />
+            </td>
+            <td>
+              Event:
+              <StyleNumberInput
+                style={style}
+                field="eventFontSize"
+                setStyle={setStyle}
+              />
             </td>
           </tr>
         </tbody>

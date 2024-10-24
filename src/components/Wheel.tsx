@@ -39,7 +39,12 @@ function getMonthRingElements(
   minDateT: Date,
   maxDateT: Date,
   dateToAngle: (date: Date) => number,
-  { monthInnerRadius, monthOuterRadius, reverse }: WheelStyleConfig,
+  {
+    monthInnerRadius,
+    monthOuterRadius,
+    reverse,
+    monthFontSize,
+  }: WheelStyleConfig,
   dateLocale: datefns.Locale,
 ) {
   if (monthInnerRadius >= monthOuterRadius) return null;
@@ -79,6 +84,7 @@ function getMonthRingElements(
           />
           <text>
             <textPath
+              fontSize={monthFontSize}
               href={`#${textPathId}`}
               textAnchor={reverse ? "end" : "start"}
               startOffset={reverse ? "100%" : "0%"}
@@ -130,6 +136,7 @@ function getEventsElements(
   events: readonly CalendarEvent[],
   dateToAngle: (date: Date) => number,
   {
+    eventFontSize,
     eventInnerRadius,
     laneGap,
     laneWidth,
@@ -179,7 +186,11 @@ function getEventsElements(
             textEndAngle,
           )}
         />
-        <text fontSize="9" dominantBaseline="middle" textAnchor="middle">
+        <text
+          fontSize={eventFontSize}
+          dominantBaseline="middle"
+          textAnchor="middle"
+        >
           <textPath href={`#${textPathId}`} startOffset="50%">
             {event.subject}
           </textPath>
