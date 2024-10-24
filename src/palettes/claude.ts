@@ -1,4 +1,6 @@
-const monthColors = [
+import { Palette, PaletteColor } from "./types";
+
+const monthColors: PaletteColor[] = [
   // [0] January
   {
     name: "Ice Blue",
@@ -71,6 +73,9 @@ const monthColors = [
     hex: "#006633", // Deep green
     description: "A rich green evocative of winter evergreens",
   },
-] as const;
+];
+const claudePalette: Palette = {
+  monthColors,
+};
 
-export default monthColors;
+export default claudePalette;

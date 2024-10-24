@@ -1,6 +1,7 @@
 import { getDefaultWheelStyle, WheelStyleConfig } from "../wheelStyle";
 import React from "react";
 import { ConfigPanelProps } from "./types";
+import { localeLabels, locales, palettes } from "../data";
 
 function StyleNumberInput({
   style,
@@ -44,15 +45,47 @@ function StyleNumberInput({
   );
 }
 
+interface RadioGroupProps {
+  options: string[];
+  labels?: Record<string, string>;
+  value: string | undefined;
+  onChangeValue: (value: string) => void;
+}
+
+function RadioGroup({
+  options,
+  labels,
+  value,
+  onChangeValue,
+}: RadioGroupProps) {
+  return (
+    <div className="flex gap-2">
+      {options.map((option) => (
+        <label key={option}>
+          <input
+            type="radio"
+            value={option}
+            checked={value === option}
+            onChange={() => onChangeValue(option)}
+          />
+          &nbsp;{labels?.[option] ?? option}
+        </label>
+      ))}
+    </div>
+  );
+}
+
 export function StylePanel({
-  minDate,
-  setMinDate,
-  maxDate,
-  setMaxDate,
   localeName,
+  maxDate,
+  minDate,
+  paletteName,
   setLocaleName,
-  style,
+  setMaxDate,
+  setMinDate,
+  setPaletteName,
   setStyle,
+  style,
 }: ConfigPanelProps) {
   return (
     <div className="flex flex-col gap-2 text-sm p-2">
@@ -87,27 +120,37 @@ export function StylePanel({
           <tr>
             <th>Locale</th>
             <td colSpan={2}>
-              <select
-                className="border border-gray-400 p-1 mx-1 rounded"
-                value={localeName}
-                onChange={(e) => setLocaleName(e.target.value)}
-              >
-                <option value="en-US">English</option>
-                <option value="fi">Finnish</option>
-              </select>
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) =>
-                    setStyle((style) => ({
-                      ...style,
-                      isoWeeks: e.target.checked,
-                    }))
-                  }
-                  checked={style.isoWeeks}
+              <div className="flex justify-between">
+                <RadioGroup
+                  options={Object.keys(locales)}
+                  labels={localeLabels}
+                  value={localeName}
+                  onChangeValue={setLocaleName}
                 />
-                &nbsp;ISO weeks
-              </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      setStyle((style) => ({
+                        ...style,
+                        isoWeeks: e.target.checked,
+                      }))
+                    }
+                    checked={style.isoWeeks}
+                  />
+                  &nbsp;ISO weeks
+                </label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th>Palette</th>
+            <td colSpan={2}>
+              <RadioGroup
+                options={Object.keys(palettes)}
+                value={paletteName}
+                onChangeValue={setPaletteName}
+              />
             </td>
           </tr>
           <tr>

@@ -1,6 +1,5 @@
 import * as datefns from "date-fns";
 import React from "react";
-import monthColors from "../monthColors";
 import { CalendarEvent } from "../types";
 import {
   DEFAULT_FRACTION_DIGITS,
@@ -8,6 +7,7 @@ import {
   generateFatArcPathCommand,
 } from "../utils/svg";
 import { WheelStyleConfig } from "../wheelStyle";
+import { Palette } from "../palettes/types";
 
 function* generateDays(minDate: Date, maxDate: Date) {
   let current = new Date(minDate);
@@ -52,29 +52,39 @@ function* generateWeekTuples(
   }
 }
 
-interface WheelProps {
-  events: readonly CalendarEvent[];
+interface WheelRenderEphemeraInput {
   minDate: Date;
   maxDate: Date;
   dateLocale: datefns.Locale;
   styleConfig: WheelStyleConfig;
+  palette: Palette;
 }
 
-function getMonthRingElements(
-  minDateT: Date,
-  maxDateT: Date,
-  dateToAngle: (date: Date) => number,
-  {
+interface WheelRenderEphemeraInternal extends WheelRenderEphemeraInput {
+  dateToAngle: (date: Date) => number;
+}
+
+interface WheelProps extends WheelRenderEphemeraInput {
+  events: readonly CalendarEvent[];
+}
+
+function getMonthRingElements({
+  minDate,
+  maxDate,
+  dateLocale,
+  palette,
+  styleConfig,
+  dateToAngle,
+}: WheelRenderEphemeraInternal) {
+  const {
     monthInnerRadius,
     monthOuterRadius,
     weekOuterRadius,
     reverse,
     monthFontSize,
-  }: WheelStyleConfig,
-  dateLocale: datefns.Locale,
-) {
+  } = styleConfig;
   if (monthInnerRadius >= monthOuterRadius) return null;
-  return Array.from(generateMonthTuples(minDateT, maxDateT)).map(
+  return Array.from(generateMonthTuples(minDate, maxDate)).map(
     ([date1, date2]) => {
       const textPathId = `month-${+date1}`;
       const startAngle = dateToAngle(date1);
@@ -95,7 +105,7 @@ function getMonthRingElements(
               reverse,
             )}
             opacity={0.7}
-            fill={monthColors[date1.getMonth()]!.hex}
+            fill={palette.monthColors[date1.getMonth()]!.hex}
           />
           {monthFontSize > 0 ? (
             <>
@@ -130,22 +140,18 @@ function getMonthRingElements(
   );
 }
 
-function getWeekRingElements(
-  minDateT: Date,
-  maxDateT: Date,
-  dateToAngle: (date: Date) => number,
-  {
-    weekInnerRadius,
-    weekOuterRadius,
-    reverse,
-    weekFontSize,
-    isoWeeks,
-  }: WheelStyleConfig,
-  dateLocale: datefns.Locale,
-) {
+function getWeekRingElements({
+  minDate,
+  maxDate,
+  dateLocale,
+  styleConfig,
+  dateToAngle,
+}: WheelRenderEphemeraInternal) {
+  const { weekInnerRadius, weekOuterRadius, reverse, weekFontSize, isoWeeks } =
+    styleConfig;
   if (weekInnerRadius >= weekOuterRadius) return null;
   return Array.from(
-    generateWeekTuples(minDateT, maxDateT, isoWeeks, dateLocale),
+    generateWeekTuples(minDate, maxDate, isoWeeks, dateLocale),
   ).map(([date1, date2]) => {
     const textPathId = `week-${+date1}`;
     const startAngle = dateToAngle(date1);
@@ -202,14 +208,15 @@ function getWeekRingElements(
   });
 }
 
-function getDateRingElements(
-  minDateT: Date,
-  maxDateT: Date,
-  dateToAngle: (date: Date) => number,
-  { dateInnerRadius, dateOuterRadius }: WheelStyleConfig,
-) {
+function getDateRingElements({
+  minDate,
+  maxDate,
+  styleConfig,
+  dateToAngle,
+}: WheelRenderEphemeraInternal) {
+  const { dateInnerRadius, dateOuterRadius } = styleConfig;
   if (dateInnerRadius >= dateOuterRadius) return null;
-  return Array.from(generateDays(minDateT, maxDateT)).map((date) => {
+  return Array.from(generateDays(minDate, maxDate)).map((date) => {
     const angle = dateToAngle(date);
     const cosAngle = Math.cos(angle);
     const sinAngle = Math.sin(angle);
@@ -236,16 +243,16 @@ function getDateRingElements(
 
 function getEventsElements(
   events: readonly CalendarEvent[],
-  dateToAngle: (date: Date) => number,
-  {
+  { styleConfig, dateToAngle }: WheelRenderEphemeraInternal,
+) {
+  const {
     eventFontSize,
     eventInnerRadius,
     laneGap,
     laneWidth,
     minimumVisibleAngleDeg,
     reverse,
-  }: WheelStyleConfig,
-) {
+  } = styleConfig;
   const minimumVisibleAngle = (minimumVisibleAngleDeg / 360) * Math.PI * 2;
   return events.map((event) => {
     // TODO: time zones not supported
@@ -316,6 +323,7 @@ export function Wheel({
   maxDate,
   dateLocale,
   styleConfig,
+  palette,
 }: WheelProps) {
   const minDateT = datefns.startOfDay(minDate);
   const maxDateT = datefns.endOfDay(maxDate);
@@ -331,25 +339,22 @@ export function Wheel({
     return p * Math.PI * 2 * (reverse ? -1 : 1) + angleOffset;
   };
 
+  const eph: WheelRenderEphemeraInternal = {
+    minDate: minDateT,
+    maxDate: maxDateT,
+    dateLocale,
+    palette,
+    styleConfig,
+    dateToAngle,
+  };
+
   return (
     <svg viewBox={`0 0 ${size} ${size}`}>
       <g transform={`translate(${size / 2},${size / 2})`}>
-        {getMonthRingElements(
-          minDateT,
-          maxDateT,
-          dateToAngle,
-          styleConfig,
-          dateLocale,
-        )}
-        {getWeekRingElements(
-          minDateT,
-          maxDateT,
-          dateToAngle,
-          styleConfig,
-          dateLocale,
-        )}
-        {getDateRingElements(minDateT, maxDateT, dateToAngle, styleConfig)}
-        {getEventsElements(events, dateToAngle, styleConfig)}
+        {getMonthRingElements(eph)}
+        {getWeekRingElements(eph)}
+        {getDateRingElements(eph)}
+        {getEventsElements(events, eph)}
       </g>
     </svg>
   );

@@ -1,24 +1,19 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Wheel } from "./components/Wheel";
-import { enUS as dateFnsEn, fi as dateFnsFi } from "date-fns/locale";
 import { CalendarEvent, CalendarEventSchema } from "./types";
 import { usePersistedZodSchemaState } from "./hooks";
 import { z } from "zod";
-import { Locale } from "date-fns";
 import { ConfigPanel } from "./components/ConfigPanel";
 import { getDefaultWheelStyle } from "./wheelStyle";
 import { loadExampleData } from "./exampleData";
-
-const locales: Record<string, Locale> = {
-  "en-US": dateFnsEn,
-  fi: dateFnsFi,
-};
+import { locales, palettes } from "./data";
 
 export default function App() {
   const [minDate, setMinDate] = React.useState("2024-01-01");
   const [maxDate, setMaxDate] = React.useState("2024-12-31");
   const [localeName, setLocaleName] = React.useState("en-US");
+  const [paletteName, setPaletteName] = React.useState("claude");
   const [style, setStyle] = React.useState(() => getDefaultWheelStyle(1000));
   const [events, setEvents] = usePersistedZodSchemaState<CalendarEvent[]>(
     "calendar-wheel-events-2",
@@ -36,6 +31,7 @@ export default function App() {
       maxDate={maxDateT}
       dateLocale={locales[localeName]!}
       styleConfig={style}
+      palette={palettes[paletteName]!}
     />
   );
 
@@ -69,6 +65,8 @@ export default function App() {
           setMaxDate={setMaxDate}
           localeName={localeName}
           setLocaleName={setLocaleName}
+          paletteName={paletteName}
+          setPaletteName={setPaletteName}
           style={style}
           setStyle={setStyle}
           onExportSVG={handleExportSVG}
