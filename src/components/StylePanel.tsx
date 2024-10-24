@@ -10,6 +10,7 @@ function StyleNumberInput({
   min = 0,
   max,
   step,
+  size,
 }: {
   style: WheelStyleConfig;
   field: keyof WheelStyleConfig;
@@ -18,6 +19,7 @@ function StyleNumberInput({
   min?: number;
   max?: number;
   step?: number;
+  size?: number;
 }) {
   return (
     <>
@@ -29,6 +31,7 @@ function StyleNumberInput({
         min={min}
         max={max}
         step={step}
+        size={size}
         onChange={(e) =>
           setStyle((style) => ({
             ...style,
@@ -53,35 +56,6 @@ export function StylePanel({
 }: ConfigPanelProps) {
   return (
     <div className="flex flex-col gap-2 text-sm p-2">
-      <div className="flex gap-2">
-        <label>
-          Date range:
-          <input
-            type="date"
-            className="border border-gray-400 p-1 mx-1 rounded"
-            value={minDate}
-            onChange={(e) => setMinDate(e.target.value)}
-          />
-          &ndash;
-          <input
-            type="date"
-            className="border border-gray-400 p-1 mx-1 rounded"
-            value={maxDate}
-            onChange={(e) => setMaxDate(e.target.value)}
-          />
-        </label>
-        <label>
-          Locale:
-          <select
-            className="border border-gray-400 p-1 mx-1 rounded"
-            value={localeName}
-            onChange={(e) => setLocaleName(e.target.value)}
-          >
-            <option value="en-US">English</option>
-            <option value="fi">Finnish</option>
-          </select>
-        </label>
-      </div>
       <label>
         <button
           onClick={() => setStyle(getDefaultWheelStyle(1000))}
@@ -90,8 +64,39 @@ export function StylePanel({
           Reset wheel style
         </button>
       </label>
-      <table className="border-collapse [&_td]:border  [&_th]:border [&_td]:p-1 [&_td]:text-right [&_th]:text-right [&_th]:p-1 border-gray-400">
+      <table className="border-collapse [&_td]:border [&_th]:border [&_td]:p-1 [&_td]:text-right [&_th]:text-right [&_th]:h-8 [&_th]:p-1 border-gray-400">
         <tbody>
+          <tr>
+            <th>Date Range</th>
+            <td colSpan={2}>
+              <input
+                type="date"
+                className="border border-gray-400 p-1 mx-1 rounded"
+                value={minDate}
+                onChange={(e) => setMinDate(e.target.value)}
+              />
+              &ndash;
+              <input
+                type="date"
+                className="border border-gray-400 p-1 mx-1 rounded"
+                value={maxDate}
+                onChange={(e) => setMaxDate(e.target.value)}
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>Locale</th>
+            <td colSpan={2}>
+              <select
+                className="border border-gray-400 p-1 mx-1 rounded"
+                value={localeName}
+                onChange={(e) => setLocaleName(e.target.value)}
+              >
+                <option value="en-US">English</option>
+                <option value="fi">Finnish</option>
+              </select>
+            </td>
+          </tr>
           <tr>
             <th>Image size</th>
             <td colSpan={2}>
@@ -171,30 +176,8 @@ export function StylePanel({
             </td>
           </tr>
           <tr>
-            <th>Rotation</th>
-            <td colSpan={2}>
-              <StyleNumberInput
-                style={style}
-                field="angleOffsetDeg"
-                setStyle={setStyle}
-                unit="deg"
-              />
-            </td>
-          </tr>
-          <tr>
-            <th>Minimum visible event size</th>
-            <td colSpan={2}>
-              <StyleNumberInput
-                style={style}
-                field="minimumVisibleAngleDeg"
-                setStyle={setStyle}
-                unit="deg"
-              />
-            </td>
-          </tr>
-          <tr>
-            <th>Direction</th>
-            <td colSpan={2}>
+            <th>Rotation &amp; direction</th>
+            <td>
               <label>
                 <input
                   type="checkbox"
@@ -206,6 +189,33 @@ export function StylePanel({
                 &nbsp;Counter-clockwise
               </label>
             </td>
+            <td>
+              <StyleNumberInput
+                style={style}
+                field="angleOffsetDeg"
+                setStyle={setStyle}
+                unit="deg"
+                min={-360}
+                max={360}
+                step={0.1}
+                size={5}
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>Minimum visible event size</th>
+            <td colSpan={2}>
+              <StyleNumberInput
+                style={style}
+                field="minimumVisibleAngleDeg"
+                setStyle={setStyle}
+                unit="deg"
+                min={0}
+                max={360}
+                step={0.001}
+                size={5}
+              />
+            </td>
           </tr>
           <tr>
             <th>Font sizes</th>
@@ -215,6 +225,7 @@ export function StylePanel({
                 style={style}
                 field="monthFontSize"
                 setStyle={setStyle}
+                size={5}
               />
             </td>
             <td>
@@ -223,6 +234,7 @@ export function StylePanel({
                 style={style}
                 field="eventFontSize"
                 setStyle={setStyle}
+                size={5}
               />
             </td>
           </tr>
