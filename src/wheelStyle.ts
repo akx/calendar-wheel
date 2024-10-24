@@ -24,13 +24,13 @@ export interface WheelStyleConfig {
 }
 
 export function getDefaultWheelStyle(size: number): WheelStyleConfig {
-  const monthOuterRadius = (size / 2) * 0.92;
+  const monthOuterRadius = (size / 2) * 0.9;
   const monthInnerRadius = (size / 2) * 0.78;
-  const weekOuterRadius = monthInnerRadius;
+  const weekInnerRadius = (size / 2) * 0.9;
+  const weekOuterRadius = (size / 2) * 0.93;
   const radiusAdj = (size / 2) * 0.02;
   const laneWidth = (size / 2) * 0.04;
   const laneGap = Math.ceil(laneWidth / 3);
-  const weekInnerRadius = weekOuterRadius - laneWidth;
   return {
     // Misc
     size,

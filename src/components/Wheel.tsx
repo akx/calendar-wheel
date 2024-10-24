@@ -67,6 +67,7 @@ function getMonthRingElements(
   {
     monthInnerRadius,
     monthOuterRadius,
+    weekOuterRadius,
     reverse,
     monthFontSize,
   }: WheelStyleConfig,
@@ -102,7 +103,7 @@ function getMonthRingElements(
             d={generateArcPathCommand(
               0,
               0,
-              monthOuterRadius + 5,
+              Math.max(weekOuterRadius, monthOuterRadius) + 5,
               textStartAngle,
               textEndAngle,
             )}
