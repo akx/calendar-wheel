@@ -1,38 +1,58 @@
 export interface WheelStyleConfig {
-  monthOuterRadius: number;
-  monthInnerRadius: number;
-  eventInnerRadius: number;
+  // Radii
   dateInnerRadius: number;
   dateOuterRadius: number;
-  laneWidth: number;
+  eventInnerRadius: number;
+  monthInnerRadius: number;
+  monthOuterRadius: number;
+  weekInnerRadius: number;
+  weekOuterRadius: number;
+  // Lanes
   laneGap: number;
-  size: number;
+  laneWidth: number;
+  // Angles
   angleOffsetDeg: number;
   minimumVisibleAngleDeg: number;
   reverse: boolean;
-  monthFontSize: number;
+  // Typography
   eventFontSize: number;
+  monthFontSize: number;
+  weekFontSize: number;
+  // Misc
+  isoWeeks: boolean;
+  size: number;
 }
 
 export function getDefaultWheelStyle(size: number): WheelStyleConfig {
   const monthOuterRadius = (size / 2) * 0.92;
   const monthInnerRadius = (size / 2) * 0.78;
+  const weekOuterRadius = monthInnerRadius;
   const radiusAdj = (size / 2) * 0.02;
   const laneWidth = (size / 2) * 0.04;
   const laneGap = Math.ceil(laneWidth / 3);
+  const weekInnerRadius = weekOuterRadius - laneWidth;
   return {
-    monthOuterRadius,
-    monthInnerRadius,
+    // Misc
+    size,
+    isoWeeks: true,
+    // Lanes
     laneGap,
     laneWidth,
-    eventInnerRadius: monthOuterRadius - radiusAdj - laneWidth,
+    // Radii
     dateInnerRadius: monthInnerRadius + radiusAdj / 2,
     dateOuterRadius: monthOuterRadius - radiusAdj / 2,
-    size,
+    eventInnerRadius: monthOuterRadius - radiusAdj - laneWidth,
+    monthInnerRadius,
+    monthOuterRadius,
+    weekInnerRadius,
+    weekOuterRadius,
+    // Angles
     angleOffsetDeg: -90,
     minimumVisibleAngleDeg: 0,
     reverse: false,
-    monthFontSize: 20,
+    // Typography
     eventFontSize: 9,
+    monthFontSize: 20,
+    weekFontSize: 12,
   };
 }

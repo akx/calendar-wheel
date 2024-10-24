@@ -22,8 +22,33 @@ function* generateMonthTuples(minDate: Date, maxDate: Date) {
   while (current <= maxDate) {
     const firstDayOfMonth = datefns.startOfMonth(current);
     const lastDayOfMonth = datefns.endOfMonth(current);
-    yield [firstDayOfMonth, lastDayOfMonth] as const;
+    yield [
+      datefns.max([minDate, firstDayOfMonth]),
+      datefns.min([maxDate, lastDayOfMonth]),
+    ] as const;
     current = datefns.addMonths(current, 1);
+  }
+}
+
+function* generateWeekTuples(
+  minDate: Date,
+  maxDate: Date,
+  iso: boolean,
+  locale: datefns.Locale,
+) {
+  let current = new Date(minDate);
+  while (current <= maxDate) {
+    const firstDayOfWeek = iso
+      ? datefns.startOfISOWeek(current)
+      : datefns.startOfWeek(current, { locale });
+    const lastDayOfWeek = iso
+      ? datefns.endOfISOWeek(current)
+      : datefns.endOfWeek(current, { locale });
+    yield [
+      datefns.max([minDate, firstDayOfWeek]),
+      datefns.min([maxDate, lastDayOfWeek]),
+    ] as const;
+    current = datefns.addDays(lastDayOfWeek, 1);
   }
 }
 
@@ -98,6 +123,74 @@ function getMonthRingElements(
       );
     },
   );
+}
+
+function getWeekRingElements(
+  minDateT: Date,
+  maxDateT: Date,
+  dateToAngle: (date: Date) => number,
+  {
+    weekInnerRadius,
+    weekOuterRadius,
+    reverse,
+    weekFontSize,
+    isoWeeks,
+  }: WheelStyleConfig,
+  dateLocale: datefns.Locale,
+) {
+  if (weekInnerRadius >= weekOuterRadius) return null;
+  return Array.from(
+    generateWeekTuples(minDateT, maxDateT, isoWeeks, dateLocale),
+  ).map(([date1, date2]) => {
+    const textPathId = `week-${+date1}`;
+    const startAngle = dateToAngle(date1);
+    const endAngle = dateToAngle(date2);
+    const [textStartAngle, textEndAngle] = reverse
+      ? [endAngle, startAngle]
+      : [startAngle, endAngle];
+    return (
+      <React.Fragment key={+date1}>
+        <path
+          d={generateFatArcPathCommand(
+            0,
+            0,
+            weekInnerRadius,
+            weekOuterRadius,
+            startAngle,
+            endAngle,
+            reverse,
+          )}
+          stroke="#333"
+          fill="none"
+          opacity={0.7}
+        />
+        <path
+          id={textPathId}
+          fill="none"
+          d={generateArcPathCommand(
+            0,
+            0,
+            (weekOuterRadius + weekInnerRadius) / 2,
+            textStartAngle,
+            textEndAngle,
+          )}
+        />
+        <text>
+          <textPath
+            fontSize={weekFontSize}
+            href={`#${textPathId}`}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            startOffset="50%"
+          >
+            {datefns.formatDate(date1, isoWeeks ? "II" : "ww", {
+              locale: dateLocale,
+            })}
+          </textPath>
+        </text>
+      </React.Fragment>
+    );
+  });
 }
 
 function getDateRingElements(
@@ -229,6 +322,13 @@ export function Wheel({
     <svg viewBox={`0 0 ${size} ${size}`}>
       <g transform={`translate(${size / 2},${size / 2})`}>
         {getMonthRingElements(
+          minDateT,
+          maxDateT,
+          dateToAngle,
+          styleConfig,
+          dateLocale,
+        )}
+        {getWeekRingElements(
           minDateT,
           maxDateT,
           dateToAngle,

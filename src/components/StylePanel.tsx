@@ -95,6 +95,19 @@ export function StylePanel({
                 <option value="en-US">English</option>
                 <option value="fi">Finnish</option>
               </select>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setStyle((style) => ({
+                      ...style,
+                      isoWeeks: e.target.checked,
+                    }))
+                  }
+                  checked={style.isoWeeks}
+                />
+                &nbsp;ISO weeks
+              </label>
             </td>
           </tr>
           <tr>
@@ -122,6 +135,25 @@ export function StylePanel({
               <StyleNumberInput
                 style={style}
                 field="monthOuterRadius"
+                setStyle={setStyle}
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>Week Ring</th>
+            <td>
+              Inner:
+              <StyleNumberInput
+                style={style}
+                field="weekInnerRadius"
+                setStyle={setStyle}
+              />
+            </td>
+            <td>
+              Outer:
+              <StyleNumberInput
+                style={style}
+                field="weekOuterRadius"
                 setStyle={setStyle}
               />
             </td>
