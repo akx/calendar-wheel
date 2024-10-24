@@ -97,29 +97,33 @@ function getMonthRingElements(
             opacity={0.7}
             fill={monthColors[date1.getMonth()]!.hex}
           />
-          <path
-            id={textPathId}
-            fill="none"
-            d={generateArcPathCommand(
-              0,
-              0,
-              Math.max(weekOuterRadius, monthOuterRadius) + 5,
-              textStartAngle,
-              textEndAngle,
-            )}
-          />
-          <text>
-            <textPath
-              fontSize={monthFontSize}
-              href={`#${textPathId}`}
-              textAnchor={reverse ? "end" : "start"}
-              startOffset={reverse ? "100%" : "0%"}
-            >
-              {datefns.formatDate(date1, "LLLL yyyy", {
-                locale: dateLocale,
-              })}
-            </textPath>
-          </text>
+          {monthFontSize > 0 ? (
+            <>
+              <path
+                id={textPathId}
+                fill="none"
+                d={generateArcPathCommand(
+                  0,
+                  0,
+                  Math.max(weekOuterRadius, monthOuterRadius) + 5,
+                  textStartAngle,
+                  textEndAngle,
+                )}
+              />
+              <text>
+                <textPath
+                  fontSize={monthFontSize}
+                  href={`#${textPathId}`}
+                  textAnchor={reverse ? "end" : "start"}
+                  startOffset={reverse ? "100%" : "0%"}
+                >
+                  {datefns.formatDate(date1, "LLLL yyyy", {
+                    locale: dateLocale,
+                  })}
+                </textPath>
+              </text>
+            </>
+          ) : null}
         </React.Fragment>
       );
     },
@@ -165,30 +169,34 @@ function getWeekRingElements(
           fill="none"
           opacity={0.7}
         />
-        <path
-          id={textPathId}
-          fill="none"
-          d={generateArcPathCommand(
-            0,
-            0,
-            (weekOuterRadius + weekInnerRadius) / 2,
-            textStartAngle,
-            textEndAngle,
-          )}
-        />
-        <text>
-          <textPath
-            fontSize={weekFontSize}
-            href={`#${textPathId}`}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            startOffset="50%"
-          >
-            {datefns.formatDate(date1, isoWeeks ? "II" : "ww", {
-              locale: dateLocale,
-            })}
-          </textPath>
-        </text>
+        {weekFontSize > 0 ? (
+          <>
+            <path
+              id={textPathId}
+              fill="none"
+              d={generateArcPathCommand(
+                0,
+                0,
+                (weekOuterRadius + weekInnerRadius) / 2,
+                textStartAngle,
+                textEndAngle,
+              )}
+            />
+            <text>
+              <textPath
+                fontSize={weekFontSize}
+                href={`#${textPathId}`}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                startOffset="50%"
+              >
+                {datefns.formatDate(date1, isoWeeks ? "II" : "ww", {
+                  locale: dateLocale,
+                })}
+              </textPath>
+            </text>
+          </>
+        ) : null}
       </React.Fragment>
     );
   });
@@ -271,28 +279,32 @@ function getEventsElements(
           stroke="#2f3640"
           strokeWidth={0.5}
         />
-        <path
-          id={textPathId}
-          fill="none"
-          d={generateArcPathCommand(
-            0,
-            0,
-            (laneInnerRadius + laneOuterRadius) / 2,
-            textStartAngle,
-            textEndAngle,
-            false,
-            isLarge,
-          )}
-        />
-        <text
-          fontSize={eventFontSize}
-          dominantBaseline="middle"
-          textAnchor="middle"
-        >
-          <textPath href={`#${textPathId}`} startOffset="50%">
-            {event.subject}
-          </textPath>
-        </text>
+        {eventFontSize > 0 ? (
+          <>
+            <path
+              id={textPathId}
+              fill="none"
+              d={generateArcPathCommand(
+                0,
+                0,
+                (laneInnerRadius + laneOuterRadius) / 2,
+                textStartAngle,
+                textEndAngle,
+                false,
+                isLarge,
+              )}
+            />
+            <text
+              fontSize={eventFontSize}
+              dominantBaseline="middle"
+              textAnchor="middle"
+            >
+              <textPath href={`#${textPathId}`} startOffset="50%">
+                {event.subject}
+              </textPath>
+            </text>
+          </>
+        ) : null}
       </React.Fragment>
     );
   });
