@@ -156,6 +156,7 @@ function getEventsElements(
     const [textStartAngle, textEndAngle] = reverse
       ? [endAngle, startAngle]
       : [startAngle, endAngle];
+    const isLarge = Math.abs(endAngle - startAngle) > Math.PI;
     const normLane = event.lane - 1;
     const laneInnerRadius = eventInnerRadius - normLane * (laneWidth + laneGap);
     const laneOuterRadius = laneInnerRadius + laneWidth;
@@ -170,6 +171,7 @@ function getEventsElements(
             startAngle,
             endAngle,
             reverse,
+            isLarge,
           )}
           fill="#f5f6fa"
           stroke="#2f3640"
@@ -184,6 +186,8 @@ function getEventsElements(
             (laneInnerRadius + laneOuterRadius) / 2,
             textStartAngle,
             textEndAngle,
+            false,
+            isLarge,
           )}
         />
         <text
