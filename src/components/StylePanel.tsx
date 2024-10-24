@@ -25,7 +25,7 @@ function StyleNumberInput({
     <>
       <input
         type="number"
-        className="border border-gray-400 p-1 mx-1 rounded"
+        className="border border-gray-400 p-1 mx-1 rounded max-w-24"
         // @ts-expect-error we'll only be using this with number fields, pinky swear
         value={style[field]}
         min={min}
@@ -251,23 +251,36 @@ export function StylePanel({
           </tr>
           <tr>
             <th>Font sizes</th>
-            <td>
-              Month:
-              <StyleNumberInput
-                style={style}
-                field="monthFontSize"
-                setStyle={setStyle}
-                size={5}
-              />
-            </td>
-            <td>
-              Event:
-              <StyleNumberInput
-                style={style}
-                field="eventFontSize"
-                setStyle={setStyle}
-                size={5}
-              />
+            <td colSpan={2}>
+              <div className="flex text-nowrap justify-between">
+                <label>
+                  Month:
+                  <StyleNumberInput
+                    style={style}
+                    field="monthFontSize"
+                    setStyle={setStyle}
+                    size={5}
+                  />
+                </label>
+                <label>
+                  Week:
+                  <StyleNumberInput
+                    style={style}
+                    field="weekFontSize"
+                    setStyle={setStyle}
+                    size={5}
+                  />
+                </label>
+                <label>
+                  Event:
+                  <StyleNumberInput
+                    style={style}
+                    field="eventFontSize"
+                    setStyle={setStyle}
+                    size={5}
+                  />
+                </label>
+              </div>
             </td>
           </tr>
         </tbody>
