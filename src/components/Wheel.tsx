@@ -359,6 +359,47 @@ function getTodayIndicatorElements({
   );
 }
 
+function getPeriodDateRing(
+  eph: WheelRenderEphemeraInternal,
+  color: string,
+  opacity: number,
+  startDate: Date,
+  endDate: Date,
+) {
+  const { styleConfig, dateToAngle } = eph;
+  const innerRadius = Math.min(
+    styleConfig.weekInnerRadius,
+    styleConfig.dateInnerRadius,
+    styleConfig.eventInnerRadius,
+    styleConfig.monthInnerRadius,
+  );
+  const outerRadius = Math.max(
+    styleConfig.weekOuterRadius,
+    styleConfig.dateOuterRadius,
+    styleConfig.eventInnerRadius,
+    styleConfig.monthOuterRadius,
+  );
+  const startAngle = dateToAngle(startDate);
+  const endAngle = dateToAngle(endDate);
+  const isLarge = Math.abs(endAngle - startAngle) > Math.PI;
+  return (
+    <path
+      d={generateFatArcPathCommand(
+        0,
+        0,
+        innerRadius,
+        outerRadius,
+        startAngle,
+        endAngle,
+        styleConfig.reverse,
+        isLarge,
+      )}
+      fill={color}
+      opacity={opacity}
+    />
+  );
+}
+
 export function Wheel({
   events,
   minDate,
@@ -390,10 +431,35 @@ export function Wheel({
     dateToAngle,
   };
 
+  const today = new Date();
+  const todayIsInRange = today >= minDateT && today <= maxDateT;
+
+  const pastElements =
+    styleConfig.pastColor && styleConfig.pastColorOpacity > 0 && todayIsInRange
+      ? getPeriodDateRing(
+          eph,
+          styleConfig.pastColor,
+          styleConfig.pastColorOpacity,
+          minDateT,
+          today,
+        )
+      : null;
+  const futureElements =
+    styleConfig.futureColor &&
+    styleConfig.futureColorOpacity > 0 &&
+    todayIsInRange
+      ? getPeriodDateRing(
+          eph,
+          styleConfig.futureColor,
+          styleConfig.futureColorOpacity,
+          today,
+          maxDateT,
+        )
+      : null;
   const transform = [
     `translate(${size / 2},${size / 2})`,
     styleConfig.alignWheelToToday
-      ? `rotate(${((+new Date() - minTimestamp) / tsRange) * -360})`
+      ? `rotate(${((+today - minTimestamp) / tsRange) * -360})`
       : "",
   ]
     .filter(Boolean)
@@ -402,6 +468,8 @@ export function Wheel({
     <svg viewBox={`0 0 ${size} ${size}`}>
       <g transform={transform}>
         {getMonthRingElements(eph)}
+        {pastElements}
+        {futureElements}
         {getWeekRingElements(eph)}
         {getDateRingElements(eph)}
         {styleConfig.showTodayIndicator ? getTodayIndicatorElements(eph) : null}

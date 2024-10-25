@@ -1,79 +1,9 @@
-import { getDefaultWheelStyle, WheelStyleConfig } from "../wheelStyle";
-import React from "react";
+import { getDefaultWheelStyle } from "../wheelStyle";
 import { ConfigPanelProps } from "./types";
 import { localeLabels, locales, palettes } from "../data";
-
-function StyleNumberInput({
-  style,
-  field,
-  setStyle,
-  unit,
-  min = 0,
-  max,
-  step,
-  size,
-}: {
-  style: WheelStyleConfig;
-  field: keyof WheelStyleConfig;
-  setStyle: React.Dispatch<React.SetStateAction<WheelStyleConfig>>;
-  unit?: string;
-  min?: number;
-  max?: number;
-  step?: number;
-  size?: number;
-}) {
-  return (
-    <>
-      <input
-        type="number"
-        className="border border-gray-400 p-1 mx-1 rounded max-w-24"
-        // @ts-expect-error we'll only be using this with number fields, pinky swear
-        value={style[field]}
-        min={min}
-        max={max}
-        step={step}
-        size={size}
-        onChange={(e) =>
-          setStyle((style) => ({
-            ...style,
-            [field]: +e.target.valueAsNumber,
-          }))
-        }
-      />
-      {unit}
-    </>
-  );
-}
-
-interface RadioGroupProps {
-  options: string[];
-  labels?: Record<string, string>;
-  value: string | undefined;
-  onChangeValue: (value: string) => void;
-}
-
-function RadioGroup({
-  options,
-  labels,
-  value,
-  onChangeValue,
-}: RadioGroupProps) {
-  return (
-    <div className="flex gap-2">
-      {options.map((option) => (
-        <label key={option}>
-          <input
-            type="radio"
-            value={option}
-            checked={value === option}
-            onChange={() => onChangeValue(option)}
-          />
-          &nbsp;{labels?.[option] ?? option}
-        </label>
-      ))}
-    </div>
-  );
-}
+import { RadioGroup } from "./RadioGroup";
+import { StyleColorAndOpacityInput } from "./StyleColorAndOpacityInput";
+import { StyleNumberInput } from "./StyleNumberInput";
 
 export function StylePanel({
   localeName,
@@ -355,6 +285,28 @@ export function StylePanel({
                 />
                 &nbsp;Show Today indicator
               </label>
+            </td>
+          </tr>
+          <tr>
+            <th>Future Color</th>
+            <td colSpan={2}>
+              <StyleColorAndOpacityInput
+                style={style}
+                setStyle={setStyle}
+                colorField="futureColor"
+                opacityField="futureColorOpacity"
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>Past Color</th>
+            <td colSpan={2}>
+              <StyleColorAndOpacityInput
+                style={style}
+                setStyle={setStyle}
+                colorField="pastColor"
+                opacityField="pastColorOpacity"
+              />
             </td>
           </tr>
         </tbody>

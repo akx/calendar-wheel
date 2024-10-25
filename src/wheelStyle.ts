@@ -24,6 +24,11 @@ export interface WheelStyleConfig {
   // Today Indicator
   showTodayIndicator: boolean;
   alignWheelToToday: boolean;
+  // Future and past coloring
+  futureColor: string | null;
+  pastColor: string | null;
+  futureColorOpacity: number;
+  pastColorOpacity: number;
 }
 
 export function getDefaultWheelStyle(size: number): WheelStyleConfig {
@@ -60,5 +65,10 @@ export function getDefaultWheelStyle(size: number): WheelStyleConfig {
     // Today
     showTodayIndicator: false,
     alignWheelToToday: false,
+    // Future and past coloring
+    futureColor: null,
+    pastColor: null,
+    futureColorOpacity: 0.5,
+    pastColorOpacity: 0.5,
   };
 }
