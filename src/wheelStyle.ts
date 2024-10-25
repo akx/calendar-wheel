@@ -21,6 +21,9 @@ export interface WheelStyleConfig {
   // Misc
   isoWeeks: boolean;
   size: number;
+  // Today Indicator
+  showTodayIndicator: boolean;
+  alignWheelToToday: boolean;
 }
 
 export function getDefaultWheelStyle(size: number): WheelStyleConfig {
@@ -54,5 +57,8 @@ export function getDefaultWheelStyle(size: number): WheelStyleConfig {
     eventFontSize: 9,
     monthFontSize: 20,
     weekFontSize: 12,
+    // Today
+    showTodayIndicator: false,
+    alignWheelToToday: false,
   };
 }

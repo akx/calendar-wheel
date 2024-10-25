@@ -317,6 +317,48 @@ function getEventsElements(
   });
 }
 
+function getTodayIndicatorElements({
+  dateToAngle,
+  styleConfig,
+}: WheelRenderEphemeraInternal) {
+  const { dateInnerRadius, dateOuterRadius } = styleConfig;
+  const dateCenterRadius = (dateInnerRadius + dateOuterRadius) / 2;
+  const dateArrowSize = Math.abs(dateOuterRadius - dateInnerRadius) / 5;
+  if (dateInnerRadius >= dateOuterRadius) return null;
+  const angle = dateToAngle(new Date());
+  const cosAngle = Math.cos(angle);
+  const sinAngle = Math.sin(angle);
+  const arrowX = cosAngle * dateCenterRadius;
+  const arrowY = sinAngle * dateCenterRadius;
+  const x1 = cosAngle * dateInnerRadius;
+  const y1 = sinAngle * dateInnerRadius;
+  const x2 = cosAngle * dateOuterRadius;
+  const y2 = sinAngle * dateOuterRadius;
+  const angleDeg = (angle * 180) / Math.PI;
+  return (
+    <>
+      <line
+        x1={x1.toFixed(DEFAULT_FRACTION_DIGITS)}
+        y1={y1.toFixed(DEFAULT_FRACTION_DIGITS)}
+        x2={x2.toFixed(DEFAULT_FRACTION_DIGITS)}
+        y2={y2.toFixed(DEFAULT_FRACTION_DIGITS)}
+        stroke="black"
+        strokeWidth={2}
+        opacity={1}
+      />
+      <g
+        transform={`translate(${arrowX},${arrowY}) rotate(${angleDeg + 180}) translate(0,${dateArrowSize * -0.2})`}
+      >
+        <polygon
+          points={`0,${-dateArrowSize} ${dateArrowSize},${dateArrowSize} ${-dateArrowSize},${dateArrowSize}`}
+          fill="white"
+          stroke="black"
+        />
+      </g>
+    </>
+  );
+}
+
 export function Wheel({
   events,
   minDate,
@@ -348,12 +390,21 @@ export function Wheel({
     dateToAngle,
   };
 
+  const transform = [
+    `translate(${size / 2},${size / 2})`,
+    styleConfig.alignWheelToToday
+      ? `rotate(${((+new Date() - minTimestamp) / tsRange) * -360})`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(",");
   return (
     <svg viewBox={`0 0 ${size} ${size}`}>
-      <g transform={`translate(${size / 2},${size / 2})`}>
+      <g transform={transform}>
         {getMonthRingElements(eph)}
         {getWeekRingElements(eph)}
         {getDateRingElements(eph)}
+        {styleConfig.showTodayIndicator ? getTodayIndicatorElements(eph) : null}
         {getEventsElements(events, eph)}
       </g>
     </svg>

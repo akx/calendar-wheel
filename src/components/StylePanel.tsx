@@ -326,6 +326,37 @@ export function StylePanel({
               </div>
             </td>
           </tr>
+          <tr>
+            <th>Today</th>
+            <td colSpan={2}>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setStyle((style) => ({
+                      ...style,
+                      alignWheelToToday: e.target.checked,
+                    }))
+                  }
+                  checked={style.alignWheelToToday}
+                />
+                &nbsp;Align wheel to today
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setStyle((style) => ({
+                      ...style,
+                      showTodayIndicator: e.target.checked,
+                    }))
+                  }
+                  checked={style.showTodayIndicator}
+                />
+                &nbsp;Show Today indicator
+              </label>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
